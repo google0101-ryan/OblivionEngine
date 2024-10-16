@@ -145,10 +145,13 @@ void IRenderBackend::DoWork()
         BeginFrame();
         break;
     case RENDER_CMD_SUBMIT_MESH:
-        SubmitGeometry((Geometry*)cmd.m_pData);
+        SubmitGeometry((Model*)cmd.m_pData);
         break;
     case RENDER_CMD_DRAWFRAME:
         DrawFrame(cmd.m_pData);
+        break;
+    case RENDER_CMD_SET_CAMERA:
+        SetCamera((Camera*)cmd.m_pData);
         break;
     default:
         Logger::Log(LogLevel::FATAL, "Unknown command %d sent to rendering backend\n");

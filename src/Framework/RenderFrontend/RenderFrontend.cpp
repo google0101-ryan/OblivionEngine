@@ -29,7 +29,7 @@ void RenderFrontend::DrawWorld()
     auto modelsToSubmit = g_GameWorld->GetModels();
     for (auto& model : modelsToSubmit)
     {
-        m_pBackend->SendCommand(RENDER_CMD_SUBMIT_MESH, model->GetGeo());
+        m_pBackend->SendCommand(RENDER_CMD_SUBMIT_MESH, model);
     }
 
     m_pBackend->SendCommand(RENDER_CMD_DRAWFRAME, nullptr);

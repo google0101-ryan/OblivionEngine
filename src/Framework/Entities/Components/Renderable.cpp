@@ -11,6 +11,4 @@ void Renderable::Update()
 {
     m_Model->UpdateModel(m_pParent->pos, m_pParent->rot, m_pParent->scale);
     g_GameWorld->AddGeometry(m_Model);
-
-    m_pParent->rot.y += 0.01f;
 }

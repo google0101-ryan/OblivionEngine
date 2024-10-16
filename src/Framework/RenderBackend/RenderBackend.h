@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Framework/Entities/Components/Camera.h>
 #include <Framework/Platform/Platform.h>
 #include <Framework/RenderBackend/Geometry.h>
 
@@ -11,7 +12,8 @@ enum RenderCmd
     RENDER_CMD_INIT,
     RENDER_CMD_BEGIN_FRAME,
     RENDER_CMD_SUBMIT_MESH,
-    RENDER_CMD_DRAWFRAME
+    RENDER_CMD_DRAWFRAME,
+    RENDER_CMD_SET_CAMERA,
 };
 
 struct RenderInitArgs
@@ -46,7 +48,8 @@ protected:
     virtual void Init(RenderInitArgs* pArgs) = 0;
     virtual void BeginFrame() = 0;
     virtual void DrawFrame(void*) = 0;
-    virtual void SubmitGeometry(Geometry* geo) = 0;
+    virtual void SubmitGeometry(Model* geo) = 0;
+    virtual void SetCamera(Camera* pCamera) = 0;
     virtual void PlatShutdown() = 0;
 };
 

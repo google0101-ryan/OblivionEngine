@@ -1,4 +1,5 @@
 #include <Framework/Entities/Components/Renderable.h>
+#include <EntityTypes/Player.h>
 #include "Framework/Entities/Entity.h"
 #include "Framework/Platform/Linux/Linux.inl"
 #include <Framework/Engine/Engine.h>
@@ -16,6 +17,7 @@ struct EngineState
     Window* m_pWindow;
     EventManager* m_pEventManager;
     RenderFrontend* m_pFrontend;
+    Player* m_pPlayer;
 
     bool m_bIsRunning = false;
 } g_engineState;
@@ -62,8 +64,33 @@ void Engine::Init(EngineConfig& config)
     // Add the entity manager to the update list
     g_EntityManager->Init();
 
-    auto exampleEntity = new Entity("example");
-    exampleEntity->AddComponent("renderMesh", new Renderable());
+    g_engineState.m_pPlayer = new Player();
+
+    glm::vec3 cubePositions[] = {
+        glm::vec3( 0.0f,  0.0f,  0.0f), 
+        glm::vec3( 2.0f,  5.0f, -15.0f), 
+        glm::vec3(-1.5f, -2.2f, -2.5f),  
+        glm::vec3(-3.8f, -2.0f, -12.3f),  
+        glm::vec3( 2.4f, -0.4f, -3.5f),  
+        glm::vec3(-1.7f,  3.0f, -7.5f),  
+        glm::vec3( 1.3f, -2.0f, -2.5f),  
+        glm::vec3( 1.5f,  2.0f, -2.5f), 
+        glm::vec3( 1.5f,  0.2f, -1.5f), 
+        glm::vec3(-1.3f,  1.0f, -1.5f)  
+    };
+
+    for (int i = 0; i < 10; i++)
+    {
+        auto exampleEntity = new Entity(("example" + std::to_string(i)).c_str());
+        exampleEntity->AddComponent("renderMesh", new Renderable());
+
+        float angle = 20.0f * i;
+
+        exampleEntity->pos = cubePositions[i];
+        exampleEntity->rot.x = angle;
+        exampleEntity->rot.y = angle*0.3f;
+        exampleEntity->rot.z = angle*0.5f;
+    }
 
     // Once all core systems have been initialized, load the game-specific DLL/.so file
 

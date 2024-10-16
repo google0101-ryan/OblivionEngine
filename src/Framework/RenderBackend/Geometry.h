@@ -21,7 +21,6 @@ struct Geometry
     vertCacheHandle_t vertCacheHandle, indexCacheHandle;
     uint64_t dynamicUBOOffset;
     IRenderImage* m_Texture;
-    glm::mat4 model;
 };
 
 struct UBO
@@ -38,10 +37,12 @@ public:
     void UpdateModel(glm::vec3 pos, glm::vec3 rot, glm::vec3 scale);
 
     Geometry* GetGeo();
+    glm::mat4& GetModel() {return model;}
 private:
     void MakeDefault();
 
     Geometry* m_Geo;
+    glm::mat4 model;
 };
 
 extern Geometry triangle;

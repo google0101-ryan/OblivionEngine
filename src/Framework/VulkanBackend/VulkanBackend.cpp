@@ -55,7 +55,7 @@ const char* g_pszLayerNames[] =
 int g_pszLayerSize = sizeof(g_pszLayerNames) / sizeof(g_pszLayerNames[0]);
 
 IRenderPass* examplePass;
-std::vector<Geometry*> backendGeo;
+std::vector<Model*> backendGeo;
 
 UBO ubo;
 
@@ -173,9 +173,19 @@ void VulkanBackend::Init(RenderInitArgs *args)
     depthRes->SetAPIData(g_VkState.depthBuffer);
     g_pRenderGraph->AttachResource(depthRes);
 
+    // Add a fallback option if the user has not specified a camera
     ubo.projection = glm::perspective(glm::radians(90.0f), (float)g_VkState.m_iSwapChainWidth / (float)g_VkState.m_iSwapChainHeight, 0.1f, 1000.0f);
     ubo.projection[1][1] *= -1;
-    ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    ubo.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f), 
+  		   glm::vec3(0.0f, 0.0f, 0.0f), 
+  		   glm::vec3(0.0f, 1.0f, 0.0f));
+
+    if (m_pCamera)
+    {
+        ubo.projection = m_pCamera->GetProjection();
+        ubo.projection[1][1] *= -1;
+        ubo.view = m_pCamera->GetView();
+    }
 
     // Now we get into some more user-friendly API: render pipeline creation
     // TODO: Switch to a graph-based renderer so we can do dependency ordering, multithreaded RenderPass optimization, etc
@@ -189,13 +199,13 @@ void VulkanBackend::Init(RenderInitArgs *args)
         {
             for (auto& geo : backendGeo)
             {
-                examplePass->SetImageAtIndex(0, geo->m_Texture);
+                examplePass->SetImageAtIndex(0, geo->GetGeo()->m_Texture);
                 examplePass->CommitAll();
                 g_VkState.m_FrameCommandBuffer[g_VkState.m_iFrameIndex].BindDescriptors((VulkanRenderPass*)examplePass, false, 0);
-                g_VkState.m_FrameCommandBuffer[g_VkState.m_iFrameIndex].PushConstants((VulkanRenderPass*)examplePass, sizeof(glm::mat4), &geo->model, VK_SHADER_STAGE_VERTEX_BIT);
-                g_VkState.m_FrameCommandBuffer[g_VkState.m_iFrameIndex].BindVertexBuffer(g_VkState.m_VertexBuffer.GetBuffer(), g_vertexStagingManager.GetInfo(geo->vertCacheHandle).m_iOffset);
-                g_VkState.m_FrameCommandBuffer[g_VkState.m_iFrameIndex].BindIndexBuffer(g_VkState.m_IndexBuffer.GetBuffer(), g_indexStagingManager.GetInfo(geo->indexCacheHandle).m_iOffset);
-                g_VkState.m_FrameCommandBuffer[g_VkState.m_iFrameIndex].DrawIndexed(geo->numIndices, 1, 0, 0, 0);
+                g_VkState.m_FrameCommandBuffer[g_VkState.m_iFrameIndex].PushConstants((VulkanRenderPass*)examplePass, sizeof(glm::mat4), &geo->GetModel(), VK_SHADER_STAGE_VERTEX_BIT);
+                g_VkState.m_FrameCommandBuffer[g_VkState.m_iFrameIndex].BindVertexBuffer(g_VkState.m_VertexBuffer.GetBuffer(), g_vertexStagingManager.GetInfo(geo->GetGeo()->vertCacheHandle).m_iOffset);
+                g_VkState.m_FrameCommandBuffer[g_VkState.m_iFrameIndex].BindIndexBuffer(g_VkState.m_IndexBuffer.GetBuffer(), g_indexStagingManager.GetInfo(geo->GetGeo()->indexCacheHandle).m_iOffset);
+                g_VkState.m_FrameCommandBuffer[g_VkState.m_iFrameIndex].DrawIndexed(geo->GetGeo()->numIndices, 1, 0, 0, 0);
             }
         }
 
@@ -268,11 +278,11 @@ void VulkanBackend::DrawFrame(void *)
     g_pRenderGraph->EndFrame();
 }
 
-void VulkanBackend::SubmitGeometry(Geometry *geo)
+void VulkanBackend::SubmitGeometry(Model *geo)
 {
     backendGeo.push_back(geo);
-    geo->vertCacheHandle = g_vertexStagingManager.AllocCache(geo->verts, sizeof(DrawVert)*geo->numVerts);
-    geo->indexCacheHandle = g_indexStagingManager.AllocCache(geo->indices, geo->numIndices*sizeof(uint16_t));
+    geo->GetGeo()->vertCacheHandle = g_vertexStagingManager.AllocCache(geo->GetGeo()->verts, sizeof(DrawVert)*geo->GetGeo()->numVerts);
+    geo->GetGeo()->indexCacheHandle = g_indexStagingManager.AllocCache(geo->GetGeo()->indices, geo->GetGeo()->numIndices*sizeof(uint16_t));
 }
 
 void VulkanBackend::PlatShutdown()
@@ -308,6 +318,11 @@ void VulkanBackend::PlatShutdown()
     delete g_VkState.m_Instance;
 
     m_bInitialized = false;
+}
+
+void VulkanBackend::SetCamera(Camera* pCamera)
+{
+    m_pCamera = pCamera;
 }
 
 IRenderBackend* CreateBackend()
