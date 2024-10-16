@@ -1,0 +1,10 @@
+bindings [
+    ubo
+    sampler
+]
+
+push_constants [
+    {
+        mat4
+    }
+]

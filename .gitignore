@@ -1,0 +1,9 @@
+engine
+*.json
+.vscode
+build
+.cache
+base/textures/default.jpg
+vkvia.html
+vulkan.txt
+engine.txt
