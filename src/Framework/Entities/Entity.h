@@ -1,8 +1,11 @@
 #pragma once
 
+#include <glm/glm.hpp>
 #include <unordered_map>
 #include <string>
 #include <vector>
+
+class Entity;
 
 // Empty class for components to derive from
 class IEntityComponent
@@ -10,8 +13,15 @@ class IEntityComponent
 public:
     virtual ~IEntityComponent() {}
 
+    void SetParent(Entity* parent)
+    {
+        m_pParent = parent;
+    }
+
     // Called once per frame by Entity::Update()
     virtual void Update() = 0;
+protected:
+    Entity* m_pParent;
 };
 
 // An entity is basically a container of components, which implement unique functionality
@@ -38,16 +48,21 @@ public:
 
     void AddComponent(std::string& name, IEntityComponent* component)
     {
+        component->SetParent(this);
         m_Components[name] = component;
     }
     void AddComponent(const char* name, IEntityComponent* component)
     {
+        component->SetParent(this);
         m_Components[name] = component;
     }
+
+    glm::vec3 pos, rot, scale; // These are on every entity
 protected:
     typedef Entity BaseClass;
 private:
     std::unordered_map<std::string, IEntityComponent*> m_Components;
+    
 };
 
 class EntityManager

@@ -3,6 +3,10 @@
 
 Entity::Entity(const char* name)
 {
+    pos = glm::vec3(0.0f);
+    scale = glm::vec3(1.0f);
+    rot = glm::vec3(0.0f);
+
     g_EntityManager->AddEntity(this);
 }
 

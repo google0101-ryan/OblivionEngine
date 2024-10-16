@@ -57,14 +57,6 @@ int g_pszLayerSize = sizeof(g_pszLayerNames) / sizeof(g_pszLayerNames[0]);
 IRenderPass* examplePass;
 std::vector<Geometry*> backendGeo;
 
-uint64_t dynamicUBOoffset;
-uint64_t AllocDynamicUBO()
-{
-    dynamicUBOoffset += sizeof(DynamicUBO);
-    return dynamicUBOoffset - sizeof(DynamicUBO);
-}
-
-DynamicUBO dynubo;
 UBO ubo;
 
 void VulkanBackend::BeginFrame()
@@ -72,7 +64,6 @@ void VulkanBackend::BeginFrame()
     backendGeo.clear();
     g_vertexStagingManager.BeginFrame();
     g_indexStagingManager.BeginFrame();
-    dynamicUBOoffset = 0;
 }
 
 void VulkanBackend::Init(RenderInitArgs *args)
@@ -190,8 +181,6 @@ void VulkanBackend::Init(RenderInitArgs *args)
     // TODO: Switch to a graph-based renderer so we can do dependency ordering, multithreaded RenderPass optimization, etc
     examplePass = g_pRenderGraph->MakePass("example", true, true, {"swap0"}, {}, {"_depth"}, []()
     {
-        dynubo.model = glm::rotate(glm::mat4{ 1.0f }, glm::radians(g_VkState.m_iFrame * 0.4f), glm::vec3(0, 1, 0));
-
         g_VkState.m_FrameCommandBuffer[g_VkState.m_iFrameIndex].BeginRenderPass(examplePass, false);
         g_VkState.m_FrameCommandBuffer[g_VkState.m_iFrameIndex].BindPipeline(examplePass);
 
@@ -203,7 +192,7 @@ void VulkanBackend::Init(RenderInitArgs *args)
                 examplePass->SetImageAtIndex(0, geo->m_Texture);
                 examplePass->CommitAll();
                 g_VkState.m_FrameCommandBuffer[g_VkState.m_iFrameIndex].BindDescriptors((VulkanRenderPass*)examplePass, false, 0);
-                g_VkState.m_FrameCommandBuffer[g_VkState.m_iFrameIndex].PushConstants((VulkanRenderPass*)examplePass, sizeof(glm::mat4), &dynubo.model, VK_SHADER_STAGE_VERTEX_BIT);
+                g_VkState.m_FrameCommandBuffer[g_VkState.m_iFrameIndex].PushConstants((VulkanRenderPass*)examplePass, sizeof(glm::mat4), &geo->model, VK_SHADER_STAGE_VERTEX_BIT);
                 g_VkState.m_FrameCommandBuffer[g_VkState.m_iFrameIndex].BindVertexBuffer(g_VkState.m_VertexBuffer.GetBuffer(), g_vertexStagingManager.GetInfo(geo->vertCacheHandle).m_iOffset);
                 g_VkState.m_FrameCommandBuffer[g_VkState.m_iFrameIndex].BindIndexBuffer(g_VkState.m_IndexBuffer.GetBuffer(), g_indexStagingManager.GetInfo(geo->indexCacheHandle).m_iOffset);
                 g_VkState.m_FrameCommandBuffer[g_VkState.m_iFrameIndex].DrawIndexed(geo->numIndices, 1, 0, 0, 0);
@@ -227,8 +216,6 @@ void VulkanBackend::DrawFrame(void *)
 
     uint64_t frameStartMs = Sys_Milliseconds();
 
-    vkWaitForFences(g_VkState.m_Device->GetDeviceHandle(), 1, &g_VkState.m_inFlightFence[g_VkState.m_iFrameIndex], VK_TRUE, UINT64_MAX);
-    
     uint32_t imageIndex;
     if (auto result = vkAcquireNextImageKHR(g_VkState.m_Device->GetDeviceHandle(), g_VkState.m_SwapChain->GetSwapChain(), UINT64_MAX, g_VkState.m_imageSema[g_VkState.m_iFrameIndex], VK_NULL_HANDLE, &imageIndex); result != VK_SUCCESS)
         Logger::Log(LogLevel::FATAL, "Failed to acquire next image with code = 0x%08x", result);
@@ -263,6 +250,8 @@ void VulkanBackend::DrawFrame(void *)
     presentInfo.pSwapchains = swapChains;
     presentInfo.pImageIndices = &imageIndex;
     presentInfo.pResults = nullptr;
+
+    vkWaitForFences(g_VkState.m_Device->GetDeviceHandle(), 1, &g_VkState.m_inFlightFence[g_VkState.m_iFrameIndex], VK_TRUE, UINT64_MAX);
 
     if (vkQueuePresentKHR(g_VkState.m_Device->GetPresentQueue(), &presentInfo) != VK_SUCCESS)
         Logger::Log(LogLevel::FATAL, "Failed to present frame");

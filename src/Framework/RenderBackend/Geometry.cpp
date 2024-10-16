@@ -1,7 +1,8 @@
 #include <Framework/RenderBackend/RenderGraphImage.h>
 #include <Framework/RenderBackend/Geometry.h>
-#include <cstdint>
 #include <cstring>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/gtc/constants.hpp>
 
 Geometry triangle;
 Geometry rectangle;
@@ -20,6 +21,16 @@ void Model::MakeDefault()
 void Model::SetTexture(std::string name)
 {
     m_Geo->m_Texture = CreateImage(name);
+}
+
+void Model::UpdateModel(glm::vec3 pos, glm::vec3 rot, glm::vec3 scale)
+{
+    glm::mat4 identity = glm::mat4(1.0f);
+    m_Geo->model = glm::translate(identity, pos);
+    m_Geo->model = glm::rotate(m_Geo->model, rot.x, glm::vec3(1.0f, 0.0f, 0.0f));
+    m_Geo->model = glm::rotate(m_Geo->model, rot.y, glm::vec3(0.0f, 1.0f, 0.0f));
+    m_Geo->model = glm::rotate(m_Geo->model, rot.z, glm::vec3(0.0f, 0.0f, 1.0f));
+    m_Geo->model = glm::scale(m_Geo->model, scale);
 }
 
 Geometry* Model::GetGeo()

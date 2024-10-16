@@ -21,10 +21,6 @@ struct Geometry
     vertCacheHandle_t vertCacheHandle, indexCacheHandle;
     uint64_t dynamicUBOOffset;
     IRenderImage* m_Texture;
-};
-
-struct DynamicUBO
-{
     glm::mat4 model;
 };
 
@@ -39,6 +35,7 @@ class Model
 public:
     Model();
     void SetTexture(std::string texName);
+    void UpdateModel(glm::vec3 pos, glm::vec3 rot, glm::vec3 scale);
 
     Geometry* GetGeo();
 private:
