@@ -284,7 +284,6 @@ void VulkanBackend::SubmitGeometry(Geometry *geo)
     backendGeo.push_back(geo);
     geo->vertCacheHandle = g_vertexStagingManager.AllocCache(geo->verts, sizeof(DrawVert)*geo->numVerts);
     geo->indexCacheHandle = g_indexStagingManager.AllocCache(geo->indices, geo->numIndices*sizeof(uint16_t));
-    printf("Added geometry %ld to cache at 0x%08lx\n", backendGeo.size(), geo->vertCacheHandle);
 }
 
 void VulkanBackend::PlatShutdown()
@@ -318,6 +317,8 @@ void VulkanBackend::PlatShutdown()
 
     g_VkState.m_Instance->Destroy();
     delete g_VkState.m_Instance;
+
+    m_bInitialized = false;
 }
 
 IRenderBackend* CreateBackend()

@@ -101,8 +101,6 @@ vertCacheHandle_t StagingManager::AllocCache(void *pData, int size)
 
     offset = endPos - size;
 
-    printf("Adding vertex data at offset %ld, size %ld\n", offset, endPos);
-
     memcpy(m_Buffers[g_VkState.m_iFrameIndex].m_pData+offset, pData, size);
 
     return (g_VkState.m_iFrame & VERTCACHE_FRAME_MASK) << VERTCACHE_FRAME_SHIFT
