@@ -15,11 +15,7 @@ public:
     void Create(std::vector<IRenderImage*> pOutputImages, bool isOutputPass, std::vector<IResource*> pInputs, std::vector<IResource*> pOutputs, bool enableDepthTest) override;
     void CommitAll() override;
     void SetImageAtIndex(int index, IRenderImage* pImage) override;
-<<<<<<< HEAD
     void EndFrame() override { m_Pipeline.EndFrame(); }
-=======
-    void EndFrame() { m_Pipeline.EndFrame(); }
->>>>>>> 404aac2112e18fa1657331fb0aab7f36e30d0fdc
 
     VkRenderPass GetRenderPass() {return m_RenderPass;}
     VkFramebuffer GetFramebuffer() {return m_FrameBuffer;}

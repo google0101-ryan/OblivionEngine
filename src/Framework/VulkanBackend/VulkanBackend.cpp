@@ -1,8 +1,5 @@
 #include "Framework/Filesystem/FileSystem.h"
-<<<<<<< HEAD
 #include "Framework/Platform/Linux/Linux.inl"
-=======
->>>>>>> 404aac2112e18fa1657331fb0aab7f36e30d0fdc
 #include "Framework/RenderBackend/RenderFormat.h"
 #include "Framework/VulkanBackend/Vulkan/Image.h"
 #include <Framework/VulkanBackend/VulkanBackend.h>
@@ -17,13 +14,9 @@
 #include <Util/Logger.h>
 
 #include <cstddef>
-<<<<<<< HEAD
 #include <cstdint>
 #include <cstdio>
 #include <unistd.h>
-=======
-#include <cstdio>
->>>>>>> 404aac2112e18fa1657331fb0aab7f36e30d0fdc
 #include <vector>
 #include <glm/gtc/matrix_transform.hpp>
 #include <vulkan/vulkan_core.h>
@@ -31,22 +24,13 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <Framework/VulkanBackend/Vulkan/stb_image.h>
 
-<<<<<<< HEAD
-#define NDEBUG
-
-=======
->>>>>>> 404aac2112e18fa1657331fb0aab7f36e30d0fdc
 IRenderImage* CreateImage(std::string path)
 {
     auto file = g_pFilesystem->OpenFileRead(("textures/" + path).c_str());
     file->Seek(SEEK_END, 0);
     size_t size = file->Tell();
     file->Seek(SEEK_SET, 0);
-<<<<<<< HEAD
     std::vector<stbi_uc> buffer(size+1);
-=======
-    std::vector<stbi_uc> buffer(size);
->>>>>>> 404aac2112e18fa1657331fb0aab7f36e30d0fdc
     file->Read(size, buffer.data());
 
     int x, y;
@@ -143,10 +127,7 @@ void VulkanBackend::Init(RenderInitArgs *args)
 
     // Select present mode
     g_VkState.m_PresentMode = g_VkState.m_Device->PickPresentMode(g_VkState.m_Surface, SwapChainPresentMode::PRESENT_MODE_FIFO);
-<<<<<<< HEAD
     Logger::Log(LogLevel::INFO, "Picked swap mode %d", g_VkState.m_PresentMode);
-=======
->>>>>>> 404aac2112e18fa1657331fb0aab7f36e30d0fdc
 
     // TODO: Support high DPI displays
     g_VkState.m_iSwapChainWidth = g_pEngine->GetMainWindow()->GetWidth();
@@ -291,14 +272,9 @@ void VulkanBackend::DrawFrame(void *)
     
     g_pRenderGraph->EndFrame();
 
-<<<<<<< HEAD
     uint64_t frameTimeMs = Sys_Milliseconds() - frameStartMs;
 //    printf("Frame time: %03ldms (%ld)\n", frameTimeMs, g_VkState.m_iFrame);
     
-=======
-    vkQueueWaitIdle(g_VkState.m_Device->GetPresentQueue());
-    printf("%ld\n", g_VkState.m_iFrame);
->>>>>>> 404aac2112e18fa1657331fb0aab7f36e30d0fdc
     m_BackendDoneCond.notify_all();
     g_pRenderGraph->EndFrame();
 }
