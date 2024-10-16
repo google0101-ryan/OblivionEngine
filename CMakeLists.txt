@@ -75,11 +75,8 @@ target_link_libraries(engine Vulkan::Vulkan)
 
 target_compile_definitions(engine PUBLIC RENDERER_VULKAN)
 target_compile_options(engine PUBLIC -Wno-nullability-completeness)
-<<<<<<< HEAD
 add_compile_options(-fsanitize=address)
 add_link_options(-fsanitize=address)
-=======
->>>>>>> 404aac2112e18fa1657331fb0aab7f36e30d0fdc
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
