@@ -1,3 +1,4 @@
+#include <Framework/GameWorld/GameWorld.h>
 #include <Framework/RenderFrontend/RenderFrontend.h>
 
 #include <Framework/RenderBackend/RenderBackend.h>
@@ -25,10 +26,10 @@ void RenderFrontend::BeginFrame()
 
 void RenderFrontend::DrawWorld()
 {
-    if (defaultModel)
+    auto modelsToSubmit = g_GameWorld->GetModels();
+    for (auto& model : modelsToSubmit)
     {
-        m_pBackend->SendCommand(RENDER_CMD_SUBMIT_MESH, &rectangle);
-        m_pBackend->SendCommand(RENDER_CMD_SUBMIT_MESH, defaultModel->GetGeo());
+        m_pBackend->SendCommand(RENDER_CMD_SUBMIT_MESH, model->GetGeo());
     }
 
     m_pBackend->SendCommand(RENDER_CMD_DRAWFRAME, nullptr);

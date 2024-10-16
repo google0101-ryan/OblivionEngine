@@ -1,3 +1,4 @@
+#include "Framework/RenderBackend/RenderGraphImage.h"
 #include <Framework/RenderBackend/RenderBackend.h>
 #include <Framework/RenderBackend/Geometry.h>
 
@@ -121,11 +122,9 @@ static void InitStaticGeometry()
 
 	AddCubeFace(&defaultCube, glm::vec3(-1, -1, 1), glm::vec3(1, -1, 1), glm::vec3(1, -1, -1), glm::vec3(-1, -1, -1) );
 	AddCubeFace(&defaultCube, glm::vec3(-1, 1, 1), glm::vec3(-1, 1, -1), glm::vec3(1, 1, -1), glm::vec3(1, 1, 1) );
+    defaultCube.m_Texture = CreateImage("default.jpg");
 
     defaultModel = new Model();
-    defaultModel->SetTexture("test.jpg");
-
-    rectangle.m_Texture = CreateImage("default.jpg");
 }
 
 void IRenderBackend::DoWork()

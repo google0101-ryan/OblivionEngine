@@ -58,6 +58,9 @@ set(SOURCES src/Util/Logger.cpp
 	        src/Framework/VulkanBackend/Vulkan/VulkanRenderPass.cpp
 	        src/Framework/VulkanBackend/Vulkan/VulkanPipeline.cpp
 	        src/Framework/VulkanBackend/Vulkan/CommandBuffer.cpp
+            src/Framework/GameWorld/GameWorld.cpp
+            src/Framework/Entities/Components/Renderable.cpp
+            src/Framework/Entities/Entity.cpp
             src/Framework/VulkanBackend/VulkanRenderPassManager.cpp)
 
 set(CMAKE_BUILD_TYPE Debug)

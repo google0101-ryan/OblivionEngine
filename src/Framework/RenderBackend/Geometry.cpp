@@ -1,5 +1,7 @@
 #include <Framework/RenderBackend/RenderGraphImage.h>
 #include <Framework/RenderBackend/Geometry.h>
+#include <cstdint>
+#include <cstring>
 
 Geometry triangle;
 Geometry rectangle;

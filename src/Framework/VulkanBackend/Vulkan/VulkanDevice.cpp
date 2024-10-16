@@ -5,9 +5,7 @@
 #include <Framework/VulkanBackend/Vulkan/VulkanFormat.h>
 #include <Util/Logger.h>
 
-#include <iostream>
 #include <vector>
-#include <vulkan/vulkan_core.h>
 
 const char* defaultExtensions[] =
 {

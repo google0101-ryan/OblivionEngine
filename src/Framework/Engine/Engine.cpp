@@ -1,3 +1,5 @@
+#include <Framework/Entities/Components/Renderable.h>
+#include "Framework/Entities/Entity.h"
 #include "Framework/Platform/Linux/Linux.inl"
 #include <Framework/Engine/Engine.h>
 
@@ -56,6 +58,12 @@ void Engine::Init(EngineConfig& config)
 
     g_engineState.m_pFrontend = new RenderFrontend();
     g_engineState.m_pFrontend->Init();
+
+    // Add the entity manager to the update list
+    g_EntityManager->Init();
+
+    auto exampleEntity = new Entity("example");
+    exampleEntity->AddComponent("renderMesh", new Renderable());
 
     // Once all core systems have been initialized, load the game-specific DLL/.so file
 
