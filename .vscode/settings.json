@@ -1,0 +1,17 @@
+{
+    "files.associations": {
+        "*.ui": "jsonc",
+        "*.txt": "plaintext",
+        "array": "cpp",
+        "chrono": "cpp",
+        "compare": "cpp",
+        "functional": "cpp",
+        "ratio": "cpp",
+        "tuple": "cpp",
+        "type_traits": "cpp",
+        "utility": "cpp",
+        "istream": "cpp",
+        "ostream": "cpp",
+        "ranges": "cpp"
+    }
+}
