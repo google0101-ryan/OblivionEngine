@@ -4,8 +4,7 @@ Oblivion is a game engine that aims to offer a fast and modern user experience, 
 
 ## BUILDING
 
-For now, building Oblivion is a Linux-only endevour.
-First, ensure you have GCC, SDL3, and Vulkan properly installed. Then, simply run from within the repo:
+First, ensure you have a C++ compiler (like GCC or VS2022) and Vulkan properly installed. Then, simply run from within the repo via either `bash` or `powershell` depending on platform:
 ```sh
 mkdir build
 cd build
