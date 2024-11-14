@@ -16,9 +16,9 @@ where prefix is the folder you want the engine installed to.
 
 ## Technical
 
-Building Oblivion produces several distinct modules. The engine is stratified into layers, with only lower-numbered layers available to higher layers, e.g. `layer1` can only rely on `layer0`. Each layer is implemented in one or more shared libraries (`.so` files on Linux). These shared libraries are loaded by `libengine.so` at runtime. 
+Building Oblivion produces several distinct modules. The engine is stratified into layers, with only lower-numbered layers available to higher layers, e.g. `layer1` can only rely on `layer0`. Each layer is implemented in one or more shared libraries (`.so` files on Linux, `.dll` files on Windows). These shared libraries are loaded by `libengine.so` or `engine.dll` at runtime. 
 
-While currently unimplemented, it is planned to allow users to write C++ code directly, implemented in a user-defined game library (`libgame_clinet.so` and `libgame_server.so`) which be loaded by the engine. Basic libraries for things such as AI will be provided as seperate optional libraries built on Oblivion in the future to ease game development.
+While currently unimplemented, it is planned to allow users to write C++ code directly, implemented in a user-defined game library (`libgame_clinet.so` or `game_client.dll` and `libgame_server.so` or `game_server.dll`) which will be loaded by the engine. Basic libraries for things such as AI will be provided as seperate optional libraries built on Oblivion in the future to ease game development.
 
 Scripting is planned to be supported to some level, but the brunt of that will be on game developers as scripting is too game-specific. Again, support libraries will most likely be made available in the future.
 
