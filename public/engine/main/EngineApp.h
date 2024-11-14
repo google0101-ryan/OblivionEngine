@@ -1,33 +1,19 @@
 #pragma once
 
 #include <app/App.h>
+#include <appsystem/AppSystemGroup.h>
 
-// Systems
-#include <layer1/Command.h>
-#include <layer1/EventSystem.h>
-
-typedef enum
-{
-    ERROR_STAGE_NONE = -1,
-    ERROR_STAGE_CREATE_SYSTEMS
-} ErrorStage_t;
-
-class CEngineApp : public CBasicApp
+class CEngineApp : public CBaseApplication
 {
 public:
-    virtual bool Create();
+    void SetArgs(int argc, char** ppArgv);
+    virtual void Init();
     virtual void Main();
     virtual void Shutdown();
 private:
-    bool CreateSystems();
-    
-    bool CreateLayer1Systems();
-
+    void ProcessEarlyVars();
 private:
-    CreateSystemFactory_t LoadModule( const char* pModuleName );
-private:
-    ErrorStage_t m_errorStage;
-
-    ICommandSystem* m_pCommandSystem;
-    IEventSystem* m_pEventSystem;
+    CAppSystemGroup m_appSystemGroup;
+    int m_argc;
+    char** m_ppArgv;
 };

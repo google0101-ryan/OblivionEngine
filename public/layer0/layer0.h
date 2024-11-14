@@ -1,15 +1,51 @@
 #pragma once
 
-#include <layer0/Platform.h>
-#include <layer0/String.h>
+#include <cstdint>
+#include <cstdlib>
+#include <cstdio>
+#include <cstddef>
+#include <cstdarg>
 
-// C++ includes
-#include <unordered_map>
-#include <map>
-#include <set>
-#include <vector>
-#include <array>
-#include <algorithm>
-#include <filesystem>
+#define STRINGIFY_HELPER(X) #X
+#define STRINGIFY(X) STRINGIFY_HELPER(X)
 
 #define abstract_class class
+
+// DLL stuff
+#ifdef __linux
+
+#include <dlfcn.h>
+
+typedef void* DllHandle_t;
+#define DllOpen(path) dlopen(path, RTLD_NOW)
+#define DllClose(pHandle) dlclose(pHandle)
+#define DllSym(pHandle, symName) dlsym(pHandle, symName)
+#define DllError() dlerror()
+
+#define DllVisible __attribute__((visibility("default")))
+
+#define DLL_PREFIX "lib"
+#define DLL_EXT ".so"
+
+#define DllName(x) DLL_PREFIX x DLL_EXT
+
+#else
+
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#include <string>
+
+typedef HMODULE DllHandle_t;
+#define DllOpen(x) LoadLibrary(x)
+#define DllClose(pHandle) FreeLibrary(pHandle)
+#define DllSym(pHandle, symName) GetProcAddress(pHandle, symName)
+#define DllError() std::to_string(GetLastError()).c_str()
+
+#define DllVisible __declspec(dllexport)
+
+#define DLL_PREFIX
+#define DLL_EXT ".dll"
+
+#define DllName(x) DLL_PREFIX x DLL_EXT
+
+#endif

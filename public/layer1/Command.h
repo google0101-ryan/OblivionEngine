@@ -1,17 +1,18 @@
 #pragma once
 
-#include <layer0/layer0.h>
 #include <appsystem/AppSystem.h>
+#include <array>
+#include <string>
 
-#define MAX_ARGS 5
+#define MAX_ARGS 20
+typedef std::array<std::string, MAX_ARGS> CmdArgs_t;
 
-typedef std::array<CString, MAX_ARGS> CCmdArgs;
+typedef void (*Command_t)(CmdArgs_t& args);
 
-typedef void (*CommandFunc_t)(CCmdArgs& args);
-
-#define CMD_SYSTEM_INTERFACE_NAME "CmdSysV001"
-abstract_class ICommandSystem : public CLayer1AppSystem<IAppSystem>
+#define COMMAND_INTERFACE_NAME "CmdSysV001"
+abstract_class ICommandSystem : public IAppSystem
 {
 public:
-    virtual void AddCommand( CString name, CommandFunc_t pFunc ) = 0;
+    virtual void AddCommand(const char* pCmdName, Command_t pCommand) = 0;
+    virtual void ExecuteCommand(const char* pCmdText) = 0;
 };

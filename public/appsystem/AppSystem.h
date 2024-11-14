@@ -2,27 +2,36 @@
 
 #include <layer0/layer0.h>
 
-typedef void* (*CreateSystemFactory_t)(const char*);
+typedef void* (*SystemFactoryFn_t)(const char*);
+typedef void* (*CreateSystemFn_t)();
 
 abstract_class IAppSystem
 {
 public:
-    // When this is called, the app can query for any systems it wants to
-    // have references to
-    virtual void Connect( CreateSystemFactory_t pFactory ) = 0;
-
-    virtual bool Create() = 0;
-    virtual void Destroy() = 0;
+    // Where we get to politely ask the parent app system group for knowledge of other app systems
+    virtual void Connect( SystemFactoryFn_t pFactory ) = 0;
+    // Initialization routine
+    virtual bool Init() = 0;
+    // Called on engine shutdown
+    virtual void Shutdown() = 0;
 };
 
-template<class TInterface>
-class CBaseAppSystem : public TInterface
+#define DECLARE_APPSYSTEM( baseClass, thisClass ) \
+    typedef baseClass BaseClass; \
+    typedef thisClass ThisClass;
+
+struct InterfaceReg_t
 {
-public:
-    virtual void Connect( CreateSystemFactory_t pFactory ) {}
+    InterfaceReg_t(const char* pName, CreateSystemFn_t pFn);
+
+    const char* m_pName;
+    CreateSystemFn_t m_pFn;
+
+    InterfaceReg_t* m_pNext;
 };
 
-template<class TInterface>
-class CLayer1AppSystem : public CBaseAppSystem<TInterface>
-{
-};
+#define EXPOSE_INTERFACE_GLOBALVAR( className, ifaceClass, var, ifaceString ) \
+    static void* __Create ##className ##ifaceClass ##_() { return static_cast<ifaceClass*>( &var ); } \
+    static InterfaceReg_t __Iface ##className ##_Reg( ifaceString,  __Create ##className ##ifaceClass ##_)
+
+extern "C" DllVisible void* GetSystem(const char* pName);

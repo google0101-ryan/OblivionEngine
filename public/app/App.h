@@ -5,15 +5,16 @@
 abstract_class IApplication
 {
 public:
-    virtual bool Create() = 0;
+    virtual void Init() = 0;
     virtual void Main() = 0;
     virtual void Shutdown() = 0;
 };
 
-class CBasicApp : public IApplication
+// Adds some convenience stuff like m_isRunning
+class CBaseApplication : public IApplication
 {
 public:
-    bool Run();
+    void Run();
 protected:
-    bool m_bIsRunning;
+    bool m_isRunning;
 };

@@ -1,22 +1,14 @@
-#pragma once
-
 #include <app/App.h>
 
-bool CBasicApp::Run()
+void CBaseApplication::Run()
 {
-    if (!Create())
-    {
-        printf( "CBasicApp::Create() failed\n" );
-        return false;
-    }
+    Init();
 
-    m_bIsRunning = true;
-    while (m_bIsRunning)
+    m_isRunning = true;
+    while (m_isRunning)
     {
         Main();
     }
 
     Shutdown();
-    
-    return true;
 }
