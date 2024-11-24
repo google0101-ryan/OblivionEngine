@@ -5,11 +5,13 @@ static CAppSystemGroup* s_pCurAppSystem;
 CAppSystemGroup::CAppSystemGroup()
 {
     s_pCurAppSystem = this;
+    m_pAppSystems.reserve(10); // Stave off allocations for a bit
 }
 
 void CAppSystemGroup::AddSystem(const char *pName, IAppSystem *pAppSystem)
 {
     m_pAppSystems[pName] = pAppSystem;
+    m_pAppSystemList.push_back(pAppSystem);
 }
 
 IAppSystem *CAppSystemGroup::GetSystem(const char *pName)
@@ -24,7 +26,7 @@ IAppSystem *CAppSystemGroup::GetSystem(const char *pName)
     {
         printf("Failed to find system: %s\n", pName);
         for (auto& sys : m_pAppSystems)
-            printf("%s\n", sys.first);
+            printf("\t%s\n", sys.first);
         return nullptr;
     }
 }
@@ -37,10 +39,10 @@ void CAppSystemGroup::ConnectAll()
 
 bool CAppSystemGroup::InitAll()
 {
-    for (auto& pSystem : m_pAppSystems)
+    for (auto& pSystem : m_pAppSystemList)
     {
         // It's up to the systems themselves to provide more verbose error messages
-        if (!pSystem.second->Init())
+        if (!pSystem->Init())
             return false;
     }
 

@@ -5,11 +5,6 @@
 
 #include "File.h"
 
-namespace fs
-{
-    using namespace std::filesystem;
-};
-
 #define MAX_SEARCHPATHS 20
 
 struct SSearchpath_t
@@ -26,6 +21,7 @@ public:
     virtual IFile* OpenFileRead( const char* pName );
     virtual IFile* OpenFileWrite( const char* pName ) { return nullptr; }
     virtual void CloseFile( IFile* pFile );
+    virtual bool ListDirectory(const char* dir, std::vector<std::string>& list, const char* ext = nullptr);
 private:
     void AddGameDirectory( const char* pDirName );
 private:
@@ -122,6 +118,30 @@ IFile *CFileSystem::OpenFileRead(const char *pName)
 void CFileSystem::CloseFile(IFile *pFile)
 {
     delete pFile;
+}
+
+bool CFileSystem::ListDirectory(const char *dir, std::vector<std::string> &list, const char *ext)
+{
+    list.reserve(1024); // Try not to allocate during this function
+
+    // For now we assume base path is fs_basepath
+    // TODO: don't
+    fs::path base = m_pBasepath->GetString();
+    base /= dir;
+
+    FS_DEBUG("Listing all files in \"%s\"\n", base.string().c_str());
+
+    for (const auto& entry : fs::directory_iterator(base))
+    {
+        if (ext && entry.is_regular_file() && entry.path().extension() == ext)
+        {
+            list.push_back(entry.path().string().c_str());
+        }
+        else if (!ext)
+            list.push_back(entry.path().string().c_str());
+    }
+
+    return !list.empty();
 }
 
 void CFileSystem::AddGameDirectory(const char *pDirName)

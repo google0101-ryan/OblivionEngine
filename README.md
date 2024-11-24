@@ -8,8 +8,14 @@ First, ensure you have a C++ compiler (like GCC or VS2022) and Vulkan properly i
 ```sh
 mkdir build
 cd build
-cmake -DCMAKE_INSTALL_PREFIX=prefix ..
+cmake -DCMAKE_INSTALL_PREFIX=../game ..
 make -j8 install
+```
+
+## RUNNING
+```sh
+cd ../game
+./engine
 ```
 
 where prefix is the folder you want the engine installed to.

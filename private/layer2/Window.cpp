@@ -1,6 +1,9 @@
 #include <layer2/Window.h>
 #include <layer2/layer2.h>
 #include <SDL3/SDL.h>
+#if VULKAN_RENDERER
+#include <SDL3/SDL_vulkan.h>
+#endif
 
 class CWindow : public CLayer2AppSystem<IWindow>
 {
@@ -10,8 +13,27 @@ public:
 
     virtual void PumpEvents();
 
-    virtual int GetWidth() const { return m_pWidth->GetInt(); }
-    virtual int GetHeight() const { return m_pHeight->GetInt(); }
+    virtual uint32_t GetWidth() const { return m_pWidth->GetInt(); }
+    virtual uint32_t GetHeight() const { return m_pHeight->GetInt(); }
+    virtual void* GetApiHandle() { return m_pWindow; }
+
+#if VULKAN_RENDERER
+    virtual void* GetSurface(void* pInstance)
+    {
+        VkSurfaceKHR ret;
+        if (!SDL_Vulkan_CreateSurface(m_pWindow, (VkInstance)pInstance, nullptr, &ret))
+        {
+            printf("Failed to create vulkan surface: %s\n", SDL_GetError());
+            exit(1);
+        }
+        return (void*)ret;
+    }
+
+    virtual const char* const* QueryExtensions(uint32_t* pCount)
+    {
+        return SDL_Vulkan_GetInstanceExtensions(pCount);
+    }
+#endif
 private:
     SDL_Window* m_pWindow;
     const ICVar* m_pWidth;
@@ -41,7 +63,14 @@ bool CWindow::Init()
         return false;
     }
 
-    m_pWindow = SDL_CreateWindow( "App", m_pWidth->GetInt(), m_pHeight->GetInt(), 0 );
+    SDL_WindowFlags flags = 0;
+#if VULKAN_RENDERER
+    flags |= SDL_WINDOW_VULKAN;
+#else
+    flags |= SDL_WINDOW_OPENGL;
+#endif
+
+    m_pWindow = SDL_CreateWindow( "App", m_pWidth->GetInt(), m_pHeight->GetInt(), flags );
 
     if (!m_pWindow)
     {

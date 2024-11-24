@@ -7,7 +7,12 @@ option(COMPILE_VULKAN "Enables vulkan support for Oblivion Engine" ON)
 # Just statically link it instead
 set(SDL_STATIC ON CACHE INTERNAL "")
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-add_subdirectory(${CMAKE_SOURCE_DIR}/vendor/SDL)
+add_subdirectory(${CMAKE_SOURCE_DIR}/vendor/SDL EXCLUDE_FROM_ALL)
+
+if (NOT COMPILE_VULKAN)
+    add_subdirectory(${CMAKE_SOURCE_DIR}/vendor/glew/build/cmake EXCLUDE_FROM_ALL)
+    include_directories(${CMAKE_SOURCE_DIR}/vendor/glew/include)
+endif()
 
 # find_package(SDL3 REQUIRED)
 
@@ -57,6 +62,44 @@ set(LAYER2_HEADERS public/layer2/Window.h
 
 add_library(layer2 SHARED ${LAYER2_SOURCES} ${LAYER2_HEADERS})
 target_link_libraries(layer2 appsystem layer0 SDL3::SDL3-static)
+if (COMPILE_VULKAN)
+    target_link_libraries(layer2 vulkan)
+endif()
+
+set(LAYER3_HEADERS public/layer3/layer3.h
+                   public/layer3/renderer/Renderer.h
+                   private/layer3/renderer/Backend.h)
+
+if (COMPILE_VULKAN)
+
+    set(LAYER3_SOURCES private/layer3/renderer/Renderer.cpp
+                       private/layer3/renderer/vkbackend/Backend.cpp
+                       private/layer3/renderer/vkbackend/vulkan/VkInstance.cpp
+                       private/layer3/renderer/vkbackend/vulkan/VkDevice.cpp
+                       private/layer3/renderer/vkbackend/vulkan/VkSwapchain.cpp
+                       private/layer3/renderer/vkbackend/vulkan/VkProgram.cpp
+                       private/layer3/renderer/vkbackend/vulkan/VkShader.cpp
+                       private/layer3/renderer/vkbackend/vulkan/VkCommandBuffer.cpp
+                       private/layer3/renderer/vkbackend/vulkan/VkInstance.h
+                       private/layer3/renderer/vkbackend/vulkan/VkDevice.h
+                       private/layer3/renderer/vkbackend/vulkan/VkSwapchain.h
+                       private/layer3/renderer/vkbackend/vulkan/VkProgram.h
+                       private/layer3/renderer/vkbackend/vulkan/VkShader.h
+                       private/layer3/renderer/vkbackend/vulkan/VkCommandBuffer.h)
+
+else()
+
+    set(LAYER3_SOURCES private/layer3/renderer/Renderer.cpp
+                       private/layer3/renderer/glbackend/Backend.cpp)
+
+endif()
+
+add_library(layer3 SHARED ${LAYER3_HEADERS} ${LAYER3_SOURCES})
+if (COMPILE_VULKAN)
+    target_link_libraries(layer3 vulkan appsystem)
+else()
+    target_link_libraries(layer3 glew_s appsystem)
+endif()
 
 set(ENGINE_SOURCES private/app/App.cpp
                     private/engine/main/EngineApp.cpp
@@ -72,3 +115,4 @@ set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT e
 install(TARGETS engine DESTINATION .)
 install(TARGETS layer1 DESTINATION bin)
 install(TARGETS layer2 DESTINATION bin)
+install(TARGETS layer3 DESTINATION bin)

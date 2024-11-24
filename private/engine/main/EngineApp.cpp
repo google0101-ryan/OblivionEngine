@@ -4,6 +4,7 @@
 #include <layer1/EventPump.h>
 #include <layer2/Window.h>
 #include <layer2/FileSystem.h>
+#include <layer3/renderer/Renderer.h>
 #include <layer0/layer0.h>
 #include <cstring>
 
@@ -60,6 +61,10 @@ void CEngineApp::Init()
     LOAD_SYSTEM_CURDLL(WINDOW_INTERFACE_NAME);
     LOAD_SYSTEM_CURDLL(FILESYSTEM_INTERFACE_NAME);
 
+    SET_CURDLL("layer3");
+
+    LOAD_SYSTEM_CURDLL(RENDERER_INTERFACE_NAME);
+
     // Let everything know about whatever they need to know about
     m_appSystemGroup.ConnectAll();
 
@@ -72,8 +77,8 @@ void CEngineApp::Init()
 
 void CEngineApp::Main()
 {
-    auto pWindow = (IWindow*)m_appSystemGroup.GetSystem(WINDOW_INTERFACE_NAME);
-    auto pEventManager = (IEventManager*)m_appSystemGroup.GetSystem(EVENT_INTERFACE_NAME);
+    auto pWindow = reinterpret_cast<IWindow*>(m_appSystemGroup.GetSystem(WINDOW_INTERFACE_NAME));
+    auto pEventManager = reinterpret_cast<IEventManager*>(m_appSystemGroup.GetSystem(EVENT_INTERFACE_NAME));
 
     pEventManager->ResetFrame();
 
@@ -102,7 +107,7 @@ void CEngineApp::Shutdown()
 
 void CEngineApp::ProcessEarlyVars()
 {
-    auto pCvarSystem = (ICvarSystem*)m_appSystemGroup.GetSystem(CVAR_INTERFACE_NAME);
+    auto pCvarSystem = reinterpret_cast<ICvarSystem*>(m_appSystemGroup.GetSystem(CVAR_INTERFACE_NAME));
 
     for (int i = 0; i < m_argc; i++)
     {
